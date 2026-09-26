@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enterprise Sales Analytics - Month Sales Trend Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header Navigation -->
+    <header class="navbar">
+      <div class="logo-container">
+        <div class="logo-icon">📊</div>
+        <div>
+          <h1>Enterprise Sales Analytics</h1>
+          <p class="subtitle">Month Sales Trend & Analytical Performance Dashboard</p>
+        </div>
+      </div>
+      <div class="nav-controls">
+        <span class="badge live-badge">● LIVE DATAWAREHOUSE</span>
+        <button id="refreshBtn" class="btn btn-primary">Refresh Metrics</button>
+      </div>
+    </header>
+
+    <!-- KPI Metric Cards -->
+    <section class="kpi-grid">
+      <div class="kpi-card glass">
+        <div class="kpi-header">
+          <span class="kpi-title">Total Net Revenue</span>
+          <span class="kpi-icon">💰</span>
+        </div>
+        <div class="kpi-value" id="kpiNetRevenue">$102,100.00</div>
+        <div class="kpi-trend positive">+14.2% MoM Growth</div>
+      </div>
+
+      <div class="kpi-card glass">
+        <div class="kpi-header">
+          <span class="kpi-title">Units Fulfilled</span>
+          <span class="kpi-icon">📦</span>
+        </div>
+        <div class="kpi-value" id="kpiTotalQuantity">56</div>
+        <div class="kpi-sub">Across 6 Order Lines</div>
+      </div>
+
+      <div class="kpi-card glass">
+        <div class="kpi-header">
+          <span class="kpi-title">Warehouse Fulfillment</span>
+          <span class="kpi-icon">🏭</span>
+        </div>
+        <div class="kpi-value" id="kpiWarehouseFulfill">62.5%</div>
+        <div class="kpi-sub">Warehouse Eligible Sites</div>
+      </div>
+
+      <div class="kpi-card glass">
+        <div class="kpi-header">
+          <span class="kpi-title">Fulfillment Health Rate</span>
+          <span class="kpi-icon">🛡️</span>
+        </div>
+        <div class="kpi-value" id="kpiReconciliation">100% PASS</div>
+        <div class="kpi-trend positive">1 Rejected (Quarantined)</div>
+      </div>
+    </section>
+
+    <!-- Filters Section -->
+    <section class="filters-bar glass">
+      <div class="filter-group">
+        <label for="regionFilter">Region:</label>
+        <select id="regionFilter">
+          <option value="ALL">All Regions</option>
+          <option value="North">North</option>
+          <option value="South">South</option>
+          <option value="West">West</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="productFilter">Product Category:</label>
+        <select id="productFilter">
+          <option value="ALL">All Categories</option>
+          <option value="Laptops">Laptops</option>
+          <option value="Servers">Servers</option>
+          <option value="Accessories">Accessories</option>
+          <option value="Industrial">Industrial</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Charts Layout Grid -->
+    <section class="charts-grid">
+      <div class="chart-card glass">
+        <h3>Monthly Revenue & Quantity Trend</h3>
+        <div class="chart-wrapper">
+          <canvas id="monthlyTrendChart"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card glass">
+        <h3>Fulfillment Location Breakdown</h3>
+        <div class="chart-wrapper">
+          <canvas id="fulfillmentChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- Detailed Sales Data Table -->
+    <section class="table-card glass">
+      <div class="table-header">
+        <h3>Detailed Monthly Sales Report</h3>
+        <input type="text" id="tableSearch" placeholder="Search customer, location or manager..." class="search-input">
+      </div>
+      <div class="table-responsive">
+        <table id="salesReportTable">
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th>Customer Name</th>
+              <th>Order Date</th>
+              <th>Order Location</th>
+              <th>Location Type</th>
+              <th>Business Manager</th>
+              <th>Units</th>
+              <th>Net Revenue</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- Dynamically Rendered -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      <p>© 2026 Enterprise Sales Analytics Data Warehouse. Governed by Kimball Standard SCD Engine.</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

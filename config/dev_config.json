@@ -1,0 +1,11 @@
+{
+  "database": {
+    "engine": "duckdb",
+    "db_path": "sales_warehouse.duckdb"
+  },
+  "etl": {
+    "batch_size": 1000,
+    "quarantine_invalid_records": true,
+    "log_level": "INFO"
+  }
+}

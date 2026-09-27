@@ -1,3 +1,13 @@
+"""Dimensions Loader Module for Enterprise Sales Analytics Data Warehouse.
+
+This module populates all dimensional tables in the data warehouse:
+  - DIM_DATE: Static calendar dimension for time-series analysis.
+  - DIM_LOCATION: Slowly Changing Dimension (SCD Type 2) tracking regional sales offices and warehouses.
+  - DIM_CUSTOMER: SCD Type 2 dimension maintaining customer history.
+  - DIM_BUSINESS_MANAGER: SCD Type 2 dimension tracking sales managers.
+  - DIM_PRODUCT: SCD Type 2 dimension tracking product catalog and pricing.
+"""
+
 from src.database.connection import DatabaseConnection
 from src.etl.seed_data import (
     get_raw_dates,
@@ -10,41 +20,42 @@ from src.utils.logger import setup_logger
 
 logger = setup_logger("DimensionsLoader")
 
+
 def load_dates(db: DatabaseConnection):
-    logger.info("Loading DIM_DATE...")
+    """Load static calendar dates into DIM_DATE.
+
+    Args:
+        db (DatabaseConnection): Active database connection instance.
+    """
+    logger.info("Loading static calendar dimension DIM_DATE...")
     dates = get_raw_dates()
     for d in dates:
-        query = """
-        INSERT INTO DIM_DATE (date_key, full_date, year, quarter, month, month_name, day_of_month, day_of_week, day_name, year_month, is_weekend)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ON CONFLICT (date_key) DO NOTHING;
-        """
-        try:
-            db.execute_query(query, (
+        # Construct idempotent insert query with fallback for SQLite compatibility
+        check_q = "SELECT date_key FROM DIM_DATE WHERE date_key = ?"
+        if not db.execute_query(check_q, (d["date_key"],)):
+            insert_q = """
+            INSERT INTO DIM_DATE (date_key, full_date, year, quarter, month, month_name, day_of_month, day_of_week, day_name, year_month, is_weekend)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """
+            db.execute_query(insert_q, (
                 d["date_key"], d["full_date"], d["year"], d["quarter"], d["month"],
                 d["month_name"], d["day_of_month"], d["day_of_week"], d["day_name"],
                 d["year_month"], d["is_weekend"]
             ))
-        except Exception:
-            # Fallback for sqlite/duckdb without ON CONFLICT syntax
-            check_q = "SELECT date_key FROM DIM_DATE WHERE date_key = ?"
-            if not db.execute_query(check_q, (d["date_key"],)):
-                insert_q = """
-                INSERT INTO DIM_DATE (date_key, full_date, year, quarter, month, month_name, day_of_month, day_of_week, day_name, year_month, is_weekend)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """
-                db.execute_query(insert_q, (
-                    d["date_key"], d["full_date"], d["year"], d["quarter"], d["month"],
-                    d["month_name"], d["day_of_month"], d["day_of_week"], d["day_name"],
-                    d["year_month"], d["is_weekend"]
-                ))
     db.commit()
-    logger.info("DIM_DATE loaded.")
+    logger.info("DIM_DATE loaded successfully.")
+
 
 def load_locations(db: DatabaseConnection):
-    logger.info("Loading DIM_LOCATION...")
+    """Load SCD Type 2 location entities (warehouses, sales offices) into DIM_LOCATION.
+
+    Args:
+        db (DatabaseConnection): Active database connection instance.
+    """
+    logger.info("Loading location dimension DIM_LOCATION...")
     locations = get_raw_locations()
     for idx, loc in enumerate(locations, start=1):
+        # Check if record version already exists
         check_q = "SELECT location_key FROM DIM_LOCATION WHERE location_id = ? AND version_number = ?"
         res = db.execute_query(check_q, (loc["location_id"], loc["version_number"]))
         if not res:
@@ -58,10 +69,16 @@ def load_locations(db: DatabaseConnection):
                 loc["is_current"], loc["version_number"]
             ))
     db.commit()
-    logger.info("DIM_LOCATION loaded.")
+    logger.info("DIM_LOCATION loaded successfully.")
+
 
 def load_customers(db: DatabaseConnection):
-    logger.info("Loading DIM_CUSTOMER...")
+    """Load SCD Type 2 customer entities into DIM_CUSTOMER.
+
+    Args:
+        db (DatabaseConnection): Active database connection instance.
+    """
+    logger.info("Loading customer dimension DIM_CUSTOMER...")
     customers = get_raw_customers()
     for idx, cust in enumerate(customers, start=1):
         check_q = "SELECT customer_key FROM DIM_CUSTOMER WHERE customer_id = ? AND version_number = ?"
@@ -77,10 +94,16 @@ def load_customers(db: DatabaseConnection):
                 cust["is_current"], cust["version_number"]
             ))
     db.commit()
-    logger.info("DIM_CUSTOMER loaded.")
+    logger.info("DIM_CUSTOMER loaded successfully.")
+
 
 def load_managers(db: DatabaseConnection):
-    logger.info("Loading DIM_BUSINESS_MANAGER...")
+    """Load SCD Type 2 business manager entities into DIM_BUSINESS_MANAGER.
+
+    Args:
+        db (DatabaseConnection): Active database connection instance.
+    """
+    logger.info("Loading business manager dimension DIM_BUSINESS_MANAGER...")
     managers = get_raw_managers()
     for idx, mgr in enumerate(managers, start=1):
         check_q = "SELECT manager_key FROM DIM_BUSINESS_MANAGER WHERE manager_id = ? AND version_number = ?"
@@ -96,10 +119,16 @@ def load_managers(db: DatabaseConnection):
                 mgr["is_current"], mgr["version_number"]
             ))
     db.commit()
-    logger.info("DIM_BUSINESS_MANAGER loaded.")
+    logger.info("DIM_BUSINESS_MANAGER loaded successfully.")
+
 
 def load_products(db: DatabaseConnection):
-    logger.info("Loading DIM_PRODUCT...")
+    """Load SCD Type 2 product catalog into DIM_PRODUCT.
+
+    Args:
+        db (DatabaseConnection): Active database connection instance.
+    """
+    logger.info("Loading product dimension DIM_PRODUCT...")
     products = get_raw_products()
     for idx, prod in enumerate(products, start=1):
         check_q = "SELECT product_key FROM DIM_PRODUCT WHERE product_id = ? AND version_number = ?"
@@ -115,11 +144,20 @@ def load_products(db: DatabaseConnection):
                 prod["is_current"], prod["version_number"]
             ))
     db.commit()
-    logger.info("DIM_PRODUCT loaded.")
+    logger.info("DIM_PRODUCT loaded successfully.")
+
 
 def load_all_dimensions(db: DatabaseConnection):
+    """Execute complete dimensional loading sequence.
+
+    Args:
+        db (DatabaseConnection): Active database connection instance.
+    """
+    logger.info("Starting master dimension loading sequence...")
     load_dates(db)
     load_locations(db)
     load_customers(db)
     load_managers(db)
     load_products(db)
+    logger.info("All dimensions loaded successfully.")
+

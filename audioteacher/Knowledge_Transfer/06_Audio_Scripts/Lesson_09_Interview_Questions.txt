@@ -1,0 +1,10 @@
+Welcome back student. Today we are going to practice answering technical interview questions based on this repository.
+Question one: How do you handle many-to-many account manager revenue attribution in a Star Schema?
+Spoken answer: We use a Bridge Table with allocation weights connecting customer dimensions to manager dimensions, preventing fact row duplication.
+Question two: How do you guarantee data quality across atomic and aggregate tables?
+Spoken answer: We run automated reconciliation checks in reports dot py comparing total net revenue sums between atomic fact order lines and monthly aggregate data marts.
+Question three: How do you handle invalid order locations without crashing batch execution?
+Spoken answer: We evaluate location classification rules during fact loading, routing ineligible location types to quarantine logs while allowing valid order lines to proceed.
+Let's pause and understand this with an example. Articulating bridge table math and automated reconciliation demonstrates senior data engineering leadership in interviews.
+Now let's see where this appears in the repository. Reconciliation checks are implemented in src analytics reports dot py.
+Congratulations, you now understand how to defend this repository in technical interviews!

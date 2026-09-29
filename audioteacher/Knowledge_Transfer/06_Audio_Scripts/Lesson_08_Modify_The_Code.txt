@@ -1,0 +1,9 @@
+Welcome back student. Today we are going to learn how to modify and extend the sales warehouse pipeline.
+Suppose business requests adding a new dimension, such as DIM_PROMOTION.
+First, create a new SQL migration file sql migrations 005_create_promotion dot sql.
+Second, add raw promotion data generator in src etl seed_data dot py.
+Third, create load_promotions function inside src etl dimensions_loader dot py and append promotion surrogate key to FACT_SALES_ORDER_LINE.
+Fourth, run pytest tests to verify that all 13 test suites pass cleanly.
+Let's pause and understand this with an example. Adding a dimension expands business reporting capabilities without breaking existing fact order line schema.
+Now let's see where this appears in the repository. Dimension loader functions are defined in src etl dimensions_loader dot py.
+Congratulations, you now understand how to safely extend the Enterprise Sales Data Warehouse!

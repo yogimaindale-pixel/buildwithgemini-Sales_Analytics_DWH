@@ -1,0 +1,8 @@
+Welcome back student. Today we are going to walk through the repository directory structure.
+The root contains main dot py and configuration files.
+The src database folder contains schema dot py and connection dot py.
+The src etl folder contains dimensions_loader dot py, bridge_loader dot py, facts_loader dot py, and aggregate_loader dot py.
+The reports dashboard folder contains the HTML and JavaScript analytical dashboard interface.
+Let's pause and understand this with an example. Modular component separation allows data engineers to update ETL loading scripts without touching database connection wrappers.
+Now let's see where this appears in the repository. Database connection management is handled in src database connection dot py.
+Congratulations, you now understand the codebase structure and module organization!

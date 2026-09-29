@@ -1,0 +1,7 @@
+Welcome back student. Today we are going to examine the dimensional model architecture in detail.
+Our warehouse contains 5 core dimensions: Customer, Product, Location, Date, and Business Manager.
+To handle historical customer updates, customer and product dimensions enforce Slowly Changing Dimension Type 2 policies with effective start and end dates.
+Atomic sales order lines are stored in FACT_SALES_ORDER_LINE, while monthly summary metrics are pre-aggregated into FACT_SALES_MONTHLY_AGG.
+Let's pause and understand this with an example. When a customer upgrades their corporate tier from Silver to Gold, SCD Type 2 preserves historical orders under Silver while tagging new orders under Gold.
+Now let's see where this appears in the repository. Schema DDL statements are defined in sql migrations 001_create_dimensions dot sql through 004_create_controls dot sql.
+Congratulations, you now understand the Star Schema architecture and dimension tracking policies!

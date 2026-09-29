@@ -1,0 +1,6 @@
+Welcome back student. Today we are going to explore the Enterprise Sales Analytics Data Warehouse repository.
+Corporate sales organizations face complex challenges tracking multi-line orders, manager revenue attribution, and fulfillment location rules.
+This repository implements a Kimball Star Schema data warehouse with SCD Type 2 dimensions, many-to-many bridge tables, and automated metric reconciliation.
+Let's pause and understand this with an example. Imagine a large enterprise account managed by two regional sales managers. If both claim 100 percent of a 100 thousand dollar order, revenue gets double counted. Our bridge table assigns fractional allocation weights to ensure perfect financial accuracy.
+Now let's see where this appears in the repository. Pipeline execution starts in main dot py, which coordinates schema migrations and ETL loaders inside src etl.
+Congratulations, you now understand the business use case and architecture of the Enterprise Sales Analytics warehouse!

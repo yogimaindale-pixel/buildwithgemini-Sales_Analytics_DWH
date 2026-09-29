@@ -1,0 +1,7 @@
+Welcome back student. Today we are going to perform a code deep dive into facts_loader dot py and bridge_loader dot py.
+In facts_loader dot py, load_sales_order_lines queries location types from DIM_LOCATION.
+If location type is not Warehouse or Manufacturing, the order line is flagged as non-eligible and diverted to quarantine.
+In bridge_loader dot py, load_bridge calculates fractional allocation weights per manager and inserts records into BRIDGE_CUSTOMER_MANAGER_ASSIGNMENT.
+Let's pause and understand this with an example. Checking location eligibility before inserting fact records guarantees that downstream analytics query only valid shipping nodes.
+Now let's see where this appears in the repository. Location verification logic is implemented in src etl facts_loader dot py.
+Congratulations, you now understand the inner code mechanics of fact loading and location firewalls!

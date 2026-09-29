@@ -1,0 +1,8 @@
+Welcome back student. Today we are going to trace the data flow sequence.
+Execution starts when schema dot py applies SQL migrations creating all tables.
+Next, dimensions_loader dot py populates master dimensions and returns surrogate keys.
+Then, bridge_loader dot py populates manager assignment weights, and facts_loader dot py populates atomic sales order lines.
+Finally, aggregate_loader dot py refreshes monthly summary marts, and reports dot py runs automated reconciliation checks.
+Let's pause and understand this with an example. The sequential data flow ensures that dimensions and surrogate keys exist before fact order lines are written.
+Now let's see where this appears in the repository. The end-to-end data flow sequence is orchestrated in main dot py between lines 33 and 72.
+Congratulations, you now understand the complete data flow sequence!

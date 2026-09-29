@@ -1,0 +1,7 @@
+Welcome back student. Today we are going to discuss core data warehouse design patterns.
+Concept one is the Many-to-Many Bridge Table Pattern, which resolves revenue attribution across multiple managers.
+Concept two is the Fulfillment Location Business Firewall, which isolates orders fulfilled from non-eligible locations like sales offices into quarantine.
+Concept three is Atomic to Aggregate Metric Reconciliation, which compares net revenue totals between order lines and summary marts.
+Let's pause and understand this with an example. The fulfillment firewall acts as a quality gatekeeper, ensuring that administrative sales office addresses do not corrupt warehouse shipping logistics reports.
+Now let's see where this appears in the repository. Fulfillment rules are implemented in src etl facts_loader dot py between lines 60 and 166.
+Congratulations, you now understand the core engineering concepts of the Sales Analytics Warehouse!

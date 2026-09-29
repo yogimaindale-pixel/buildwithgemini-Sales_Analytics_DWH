@@ -1,0 +1,9 @@
+Welcome back student. Today we are going to trace the exact execution sequence when running main dot py.
+main initializes DatabaseConnection, enabling foreign key constraints in SQLite.
+run_migrations reads SQL files from sql migrations and executes table DDLs.
+load_all_dimensions seeds master entities and populates surrogate keys.
+load_sales_order_lines evaluates location eligibility rules and lands clean order lines.
+reconcile_atomic_and_aggregate executes cross-table verification, asserting zero revenue variance.
+Let's pause and understand this with an example. If total net revenue in atomic fact lines differs from monthly aggregate marts by even one cent, reconciliation logs a critical warning.
+Now let's see where this appears in the repository. Metric reconciliation is defined in src analytics reports dot py between lines 70 and 105.
+Congratulations, you now understand the step-by-step pipeline execution flow!

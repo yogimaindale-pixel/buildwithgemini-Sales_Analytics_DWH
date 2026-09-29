@@ -1,14 +1,29 @@
+# Module docstring explaining business analytics reporting and data reconciliation functions
+"""Analytics & Reporting Module providing detailed sales queries and atomic-to-aggregate reconciliation."""
+
+# Import DatabaseConnection wrapper class
 from src.database.connection import DatabaseConnection
+# Import logger setup helper to log report execution
 from src.utils.logger import setup_logger
 
+# Initialize logger instance for reports engine
 logger = setup_logger("ReportsEngine")
 
+# Function querying detailed monthly transactional sales line items joined across dimensions
 def get_detailed_monthly_sales_report(db: DatabaseConnection):
+    """Retrieve line-item detailed sales report with customer, date, pricing, location, and manager details.
+
+    Columns returned:
+        0: customer_name
+        1: order_date
+        2: total_quantity
+        3: total_revenue (net_revenue)
+        4: sales_location (order_location_name)
+        5: location_type
+        6: business_manager_name
+        7: order_number
     """
-    Detailed Monthly Sales Report:
-    customer_name, order_date, total_quantity, total_revenue (net_revenue),
-    sales_location (order_location_name), location_type, business_manager_name
-    """
+    # Query joining FACT_SALES_ORDER_LINE with DIM_CUSTOMER, DIM_DATE, DIM_LOCATION, and DIM_BUSINESS_MANAGER
     query = """
     SELECT 
         c.customer_name,
@@ -28,11 +43,17 @@ def get_detailed_monthly_sales_report(db: DatabaseConnection):
     """
     return db.execute_query(query)
 
+# Function querying monthly aggregated sales trends from FACT_SALES_MONTHLY_AGG
 def get_monthly_sales_trend(db: DatabaseConnection):
+    """Retrieve monthly sales performance metrics aggregated by year-month.
+
+    Columns returned:
+        0: year_month
+        1: total_quantity
+        2: total_net_revenue
+        3: order_line_count
     """
-    Month Sales Trend:
-    year_month, total_quantity, total_net_revenue, order_line_count
-    """
+    # Query summarizing FACT_SALES_MONTHLY_AGG data mart by year_month
     query = """
     SELECT 
         year_month,
@@ -45,22 +66,30 @@ def get_monthly_sales_trend(db: DatabaseConnection):
     """
     return db.execute_query(query)
 
+# Function performing reconciliation check between atomic order lines and monthly aggregate mart
 def reconcile_atomic_and_aggregate(db: DatabaseConnection) -> dict:
+    """Reconcile total quantity, net revenue, and row counts between atomic and aggregate tables.
+
+    Returns:
+        dict: Reconciliation result dictionary containing 'reconciled' boolean flag and totals.
     """
-    Reconciles total net revenue and total quantity between FACT_SALES_ORDER_LINE and FACT_SALES_MONTHLY_AGG
-    """
+    # Atomic query summing quantity, net revenue, and counting line records in FACT_SALES_ORDER_LINE
     atomic_q = "SELECT SUM(quantity), SUM(net_revenue), COUNT(fact_id) FROM FACT_SALES_ORDER_LINE;"
+    # Aggregate query summing total_quantity, total_net_revenue, and order_line_count in FACT_SALES_MONTHLY_AGG
     agg_q = "SELECT SUM(total_quantity), SUM(total_net_revenue), SUM(order_line_count) FROM FACT_SALES_MONTHLY_AGG;"
     
+    # Execute reconciliation queries
     atomic_res = db.execute_query(atomic_q)[0]
     agg_res = db.execute_query(agg_q)[0]
 
+    # Evaluate exact equality for quantity and row count, and float delta < $0.01 for revenue
     reconciled = (
         atomic_res[0] == agg_res[0] and
         abs(float(atomic_res[1] or 0) - float(agg_res[1] or 0)) < 0.01 and
         atomic_res[2] == agg_res[2]
     )
 
+    # Return structured dictionary report
     return {
         "reconciled": reconciled,
         "atomic_totals": {
@@ -74,3 +103,4 @@ def reconcile_atomic_and_aggregate(db: DatabaseConnection) -> dict:
             "order_line_count": agg_res[2]
         }
     }
+
